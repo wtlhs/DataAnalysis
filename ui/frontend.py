@@ -37,59 +37,77 @@ def render_frontend_page(session_manager, task_manager):
     # 加载自定义CSS
     load_custom_css()
 
-    # 页面标题
-    st.markdown("""
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-        <div>
-            <h1 style="font-size: 1.875rem; font-weight: 600; margin: 0;">📊 数据分析工作台</h1>
-            <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">上传数据文件，获取智能分析报告</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # 简洁页面标题
+    st.title("📊 数据分析工作台")
 
     # 初始化session state
     _init_session_state()
 
-    # 功能导航 (使用 shadcn 风格 tabs)
-    nav_options = [
-        ("📁 数据上传", "upload"),
-        ("📊 数据预览", "preview"),
-        ("📈 统计分析", "analysis"),
-        ("🔮 趋势预测", "prediction"),
-        ("⚠️ 风险预警", "risk"),
-        ("🤖 AI分析", "ai"),
-        ("📝 报告中心", "reports")
+    # 功能导航
+    nav_items = [
+        ("📁 上传", "upload"),
+        ("📊 预览", "preview"),
+        ("📈 分析", "analysis"),
+        ("🔮 预测", "prediction"),
+        ("⚠️ 风险", "risk"),
+        ("🤖 AI", "ai"),
+        ("📝 报告", "reports")
     ]
     
-    # 创建导航
-    cols = st.columns([1] * len(nav_options))
-    selected_nav = "upload"
+    # 初始化当前页面
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = "upload"
     
-    # 侧边栏导航
-    page = st.sidebar.radio("选择功能", [
-        "📁 数据上传",
-        "📊 数据预览",
-        "📈 统计分析",
-        "🔮 趋势预测",
-        "⚠️ 风险预警",
-        "🤖 AI分析",
-        "📝 报告中心"
-    ])
-
+    # 从URL参数获取页面
+    query_params = st.query_params
+    if 'page' in query_params:
+        st.session_state.current_page = query_params['page'][0]
+    
+    # 简洁导航
+    nav_key = "nav_segment"
+    
+    # 创建导航映射 - 必须在使用前定义
+    nav_map = {label: page_id for label, page_id in nav_items}
+    reverse_map = {page_id: label for label, page_id in nav_items}
+    
+    # 获取当前页面对应的标签
+    current_label = reverse_map.get(st.session_state.current_page, "📁 上传")
+    
+    # 初始化或更新session state中的导航key
+    if nav_key not in st.session_state:
+        st.session_state[nav_key] = current_label
+    
+    # 手动检查页面变化
+    selected_label = st.session_state.get(nav_key, current_label)
+    if selected_label != current_label:
+        new_page = nav_map.get(selected_label)
+        if new_page:
+            st.session_state.current_page = new_page
+            st.rerun()
+    
+    page = st.segmented_control(
+        "导航",
+        options=[label for label, _ in nav_items],
+        key=nav_key
+    )
+    
+    # 分隔线
+    st.divider()
+    
     # 根据选择的页面渲染内容
-    if page == "📁 数据上传":
+    if st.session_state.current_page == "upload":
         render_data_upload_section(session_manager)
-    elif page == "📊 数据预览":
+    elif st.session_state.current_page == "preview":
         render_data_preview_section(session_manager)
-    elif page == "📈 统计分析":
+    elif st.session_state.current_page == "analysis":
         render_analysis_section(session_manager)
-    elif page == "🔮 趋势预测":
+    elif st.session_state.current_page == "prediction":
         render_prediction_section(session_manager, task_manager)
-    elif page == "⚠️ 风险预警":
+    elif st.session_state.current_page == "risk":
         render_risk_section(session_manager, task_manager)
-    elif page == "🤖 AI分析":
+    elif st.session_state.current_page == "ai":
         render_ai_section(session_manager, task_manager)
-    elif page == "📝 报告中心":
+    elif st.session_state.current_page == "reports":
         render_report_center_section(session_manager)
 
 
@@ -121,66 +139,20 @@ def _init_session_state():
 
 def render_data_upload_section(session_manager):
     """数据上传页面"""
-    # 页面标题
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📁 数据上传</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">上传您的Excel或CSV文件，开始智能数据分析</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("📁 上传数据")
     
-    # 功能介绍卡片
-    st.markdown("""
-    <div class="feature-grid" style="margin-bottom: 1.5rem;">
-        <div class="feature-card">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
-            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">统计分析</h3>
-            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">描述性统计、分布分析、相关性分析</p>
-        </div>
-        <div class="feature-card">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔮</div>
-            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">趋势预测</h3>
-            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">时间序列预测、未来走势分析</p>
-        </div>
-        <div class="feature-card">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
-            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">风险预警</h3>
-            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">异常检测、风险评估、预警通知</p>
-        </div>
-        <div class="feature-card">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
-            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">AI智能分析</h3>
-            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">大模型驱动的智能洞察与报告</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # 上传区域
-    st.markdown('<div class="upload-zone">', unsafe_allow_html=True)
-    
+    # 上传组件
     uploaded_files = render_multi_file_upload("拖拽文件到此处或点击选择")
     
     if uploaded_files:
-        st.markdown(f"""
-        <div style="margin-top: 1rem;">
-            <span class="status-badge info">已选择 {len(uploaded_files)} 个文件</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 上传按钮
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        if uploaded_files and st.button("🚀 开始上传", type="primary", use_container_width=True):
+        st.write(f"已选择 {len(uploaded_files)} 个文件")
+        
+        if st.button("🚀 开始上传", type="primary"):
             from config.settings import settings
 
             with st.spinner("正在处理文件..."):
                 try:
-                    # 准备文件数据
                     file_list = [(f.name, f.getvalue()) for f in uploaded_files]
-
-                    # 加载文件
                     loader = st.session_state.loader
                     datasets = loader.load_multiple_files(
                         file_list,
@@ -190,34 +162,45 @@ def render_data_upload_section(session_manager):
 
                     st.success(f"✅ 成功上传 {len(datasets)} 个文件！")
 
-                    # 设置第一个数据集为激活状态
                     if datasets:
                         first_id = list(datasets.keys())[0]
                         session_manager.set_active_dataset(first_id)
                         st.rerun()
 
                 except Exception as e:
-                    render_error_message(f"上传失败: {str(e)}")
+                    st.error(f"上传失败: {str(e)}")
 
     # 显示数据集列表
     datasets = session_manager.list_datasets()
-    render_dataset_list(datasets, session_manager)
+    if datasets:
+        st.write("已上传的数据集：")
+        for ds in datasets:
+            col1, col2, col3 = st.columns([3, 2, 1])
+            with col1:
+                st.write(f"📄 {ds.get('name', '未知')}")
+            with col2:
+                created_at = ds.get('created_at', '')
+                st.write(created_at[:19] if created_at else '')
+            with col3:
+                is_current = st.session_state.current_dataset_id == ds['id']
+                if is_current:
+                    st.write("✅ 当前")
+                else:
+                    if st.button("选择", key=f"select_{ds['id']}"):
+                        session_manager.set_active_dataset(ds['id'])
+                        st.session_state.current_dataset_id = ds['id']
+                        st.session_state.df = None  # 清除缓存，强制重新加载
+                        st.rerun()
+            st.divider()
 
 
 def render_data_preview_section(session_manager):
     """数据预览页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📊 数据预览</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">查看已上传数据的结构和内容</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("📊 数据预览")
 
-    # 获取当前数据集
     dataset = session_manager.get_active_dataset()
-
     if not dataset:
-        st.info("👈 请先上传数据文件")
+        st.info("请先上传数据文件")
         return
 
     # 加载数据
@@ -228,25 +211,17 @@ def render_data_preview_section(session_manager):
             st.session_state.df = df
             st.session_state.current_dataset_id = dataset['id']
         except Exception as e:
-            render_error_message(f"数据加载失败: {str(e)}")
+            st.error(f"数据加载失败: {str(e)}")
             return
 
-    # 渲染数据预览
     render_data_preview(st.session_state.df)
 
 
 def render_analysis_section(session_manager):
     """统计分析页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📈 统计分析</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">对数据进行描述性统计和可视化分析</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("📈 统计分析")
 
-    # 获取当前数据集
     dataset = session_manager.get_active_dataset()
-
     if not dataset:
         st.info("👈 请先上传数据文件")
         return
@@ -322,34 +297,26 @@ def render_analysis_section(session_manager):
 
 def render_prediction_section(session_manager, task_manager):
     """预测分析页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">🔮 趋势预测</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">基于历史数据进行时间序列预测</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("🔮 趋势预测")
 
-    # 获取当前数据集
     dataset = session_manager.get_active_dataset()
-
     if not dataset:
-        st.info("👈 请先上传数据文件")
+        st.info("请先上传数据文件")
         return
 
     df = st.session_state.df
     loader = st.session_state.loader
     predictor = st.session_state.predictor
 
-    # 选择日期列和数值列
     date_cols = loader.get_date_columns(df)
     numeric_cols = loader.get_numeric_columns(df)
 
     if not date_cols:
-        st.warning("⚠️ 未检测到日期列，请确保数据中包含日期类型字段")
+        st.warning("未检测到日期列")
         return
 
     if not numeric_cols:
-        st.warning("⚠️ 未检测到数值列")
+        st.warning("未检测到数值列")
         return
 
     col1, col2 = st.columns(2)
@@ -428,25 +395,17 @@ def render_prediction_section(session_manager, task_manager):
 
 def render_risk_section(session_manager, task_manager):
     """风险预警页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">⚠️ 风险预警</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">智能识别异常数据，评估风险等级</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("⚠️ 风险预警")
 
-    # 获取当前数据集
     dataset = session_manager.get_active_dataset()
-
     if not dataset:
-        st.info("👈 请先上传数据文件")
+        st.info("请先上传数据文件")
         return
 
     df = st.session_state.df
     loader = st.session_state.loader
     risk_monitor = st.session_state.risk_monitor
 
-    # 选择要监控的列
     numeric_cols = loader.get_numeric_columns(df)
     date_cols = loader.get_date_columns(df)
 
@@ -526,21 +485,27 @@ def render_risk_section(session_manager, task_manager):
 
 def render_ai_section(session_manager, task_manager):
     """AI智能分析页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">🤖 AI智能分析</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">利用大模型进行深度数据分析和智能洞察</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("🤖 AI智能分析")
 
-    # 获取当前数据集
     dataset = session_manager.get_active_dataset()
-
     if not dataset:
-        st.info("👈 请先上传数据文件")
+        st.info("请先上传数据文件")
         return
 
+    if st.session_state.df is None or st.session_state.current_dataset_id != dataset['id']:
+        try:
+            loader = st.session_state.loader
+            df = loader.get_dataset_from_db(dataset['id'], session_manager)
+            st.session_state.df = df
+            st.session_state.current_dataset_id = dataset['id']
+        except Exception as e:
+            st.warning(f"加载数据失败: {str(e)}")
+            return
+
     from config.settings import settings
+
+    # 重新加载配置，确保获取最新保存的密钥
+    settings.reload_model_config()
 
     # 检查API配置
     if not settings.validate():
@@ -564,11 +529,23 @@ def render_ai_section(session_manager, task_manager):
         st.subheader("💡 智能洞察生成")
 
         df = st.session_state.df
+        if df is None or df.empty:
+            st.warning("数据为空，请重新上传数据")
+            return
+            
         loader = st.session_state.loader
         numeric_cols = loader.get_numeric_columns(df)
+        
+        # 确保analyzer已初始化
+        if 'analyzer' not in st.session_state:
+            st.session_state.analyzer = Analyzer()
 
         if st.button("✨ 生成洞察", key="generate_insights", type="primary"):
             def run_insights_generation():
+                # 初始化analyzer
+                if 'analyzer' not in st.session_state:
+                    st.session_state.analyzer = Analyzer()
+                    
                 data_summary = ai_agent.summarize_data(df)
                 analyzer = st.session_state.analyzer
 
@@ -598,6 +575,53 @@ def render_ai_section(session_manager, task_manager):
             for i, insight in enumerate(insights, 1):
                 st.write(f"{i}. {insight}")
 
+    elif ai_function == "生成完整报告":
+        st.subheader("📄 生成完整报告")
+
+        df = st.session_state.df
+        if df is None or df.empty:
+            st.warning("数据为空，请重新上传数据")
+            return
+
+        if st.button("📝 生成分析报告", key="generate_report", type="primary"):
+            loader = st.session_state.loader
+            analyzer = st.session_state.analyzer
+            
+            def run_report_generation():
+                # 数据摘要
+                data_summary = ai_agent.summarize_data(df)
+                
+                # 统计分析
+                numeric_cols = loader.get_numeric_columns(df)
+                stats_results = {}
+                for col in numeric_cols[:5]:
+                    stats_results[col] = analyzer.descriptive_statistics(df, col)
+                
+                # 生成报告
+                all_results = {
+                    'data_summary': data_summary,
+                    'statistics': stats_results
+                }
+                return ai_agent.write_report(all_results)
+
+            task_id = task_manager.submit_task('ai_analysis', run_report_generation)
+            st.session_state['current_task_id'] = task_id
+            st.rerun()
+
+        # 检查并显示任务结果
+        if 'current_task_id' in st.session_state:
+            result = render_progress_indicator(st.session_state['current_task_id'], task_manager)
+
+            if result:
+                st.session_state.generated_report = result
+                del st.session_state['current_task_id']
+                st.rerun()
+
+        # 显示报告
+        if 'generated_report' in st.session_state and st.session_state.generated_report:
+            st.subheader("📊 数据分析报告")
+            st.markdown(st.session_state.generated_report, unsafe_allow_html=True)
+
     elif ai_function == "交互式问答":
         st.subheader("💬 交互式问答")
 
@@ -616,11 +640,14 @@ def render_ai_section(session_manager, task_manager):
         )
 
         if st.button("🤖 提问", key="ask_ai", type="primary"):
+            # 获取当前数据和分析结果
+            df = st.session_state.df
+            context = st.session_state.analysis_results if 'analysis_results' in st.session_state else {}
+            
             def run_qa():
-                context = st.session_state.analysis_results
                 return ai_agent.chat_async(
                     question,
-                    st.session_state.df,
+                    df,
                     context
                 )
 
@@ -653,13 +680,7 @@ def render_ai_section(session_manager, task_manager):
 
 def render_report_center_section(session_manager):
     """报告中心页面"""
-    st.markdown("""
-    <div class="section-header">
-        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📝 报告中心</h2>
-        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">管理和下载已生成的智能分析报告</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("📝 报告中心")
 
-    # 显示报告列表
     reports = session_manager.list_reports()
     render_report_list(reports, session_manager)

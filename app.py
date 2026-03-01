@@ -95,56 +95,46 @@ def main():
     # 获取当前模式
     mode = get_page_mode()
 
-    # 显示模式切换器（仅在前台显示）
-    if mode != 'admin':
-        st.markdown("""
-        <div class="mode-switcher">
-            <a href="?mode=frontend" class="mode-link {'active' if mode == 'frontend' else ''}">👤 前台操作</a>
-            <a href="?mode=admin" class="mode-link {'active' if mode == 'admin' else ''}">🔧 后台管理</a>
-        </div>
-        """, unsafe_allow_html=True)
-
     # 根据模式渲染不同的页面
     if mode == 'admin':
         # 检查是否需要登录
         needs_login = not is_admin_logged_in()
 
         if needs_login:
-            # 显示登录页面
+            # 未登录，只显示登录页面
             render_login_page()
-            return
+            return  # 不显示页脚
+        else:
+            # 已登录，显示后台管理页面
+            render_admin_header()
+            render_logout_button()
 
-        # 已登录，显示后台管理页面
-        render_admin_header()
-        render_logout_button()
+            st.markdown('<div class="admin-content">', unsafe_allow_html=True)
 
-        st.markdown('<div class="admin-content">', unsafe_allow_html=True)
+            session_manager = get_session_manager()
+            task_manager = get_task_manager()
+            render_backend_page(session_manager)
 
-        session_manager = get_session_manager()
-        task_manager = get_task_manager()
-        render_backend_page(session_manager)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
+            st.markdown('</div>', unsafe_allow_html=True)
     else:
         # 前台操作页面
         session_manager = get_session_manager()
         task_manager = get_task_manager()
         render_frontend_page(session_manager, task_manager)
 
-    # 页脚
-    st.markdown("""
-    <div class="page-footer">
-        <div class="footer-content">
-            <div class="footer-left">
-                <span class="footer-text">© 2024 数据分析智能体</span>
-            </div>
-            <div class="footer-right">
-                <span class="footer-text">v2.0</span>
+        # 前台和后台都显示页脚
+        st.markdown("""
+        <div class="page-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span class="footer-text">© 2026 数据分析智能体</span>
+                </div>
+                <div class="footer-right">
+                    <span class="footer-text">v2.0</span>
+                </div>
             </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
