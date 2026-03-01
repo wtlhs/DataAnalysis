@@ -1,28 +1,70 @@
 """
-数据分析智能体 - Streamlit主应用
+数据分析智能体 - Streamlit主应用（重构版）
 
-用户上传Excel文件，进行数据分析、预测、风险预警
-支持数据持久化、多表格管理、异步任务处理
+支持路由系统、前后台分离、管理员登录
 """
 import streamlit as st
 import sys
 from pathlib import Path
+from datetime import datetime
+from urllib.parse import parse_qs
 
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent))
-
-# 页面配置
-st.set_page_config(
-    page_title="数据分析智能体",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 from db.session_manager import SessionManager
 from db.task_manager import TaskManager
 from ui.frontend import render_frontend_page
 from ui.backend import render_backend_page
+from ui.components import (
+    load_custom_css,
+    is_admin_logged_in,
+    render_login_page,
+    render_admin_header,
+    render_logout_button
+)
+
+# ============ 页面配置 ============
+
+# 设置页面
+st.set_page_config(
+    page_title="数据分析智能体",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# ============ 路由系统 ============
+
+def get_page_mode():
+    """从URL参数获取页面模式
+
+    Returns:
+        'frontend', 'admin', 或 'login'
+    """
+    # 获取查询参数
+    query_params = st.query_params
+
+    # 检查模式参数
+    mode = query_params.get('mode', ['frontend'])[0]
+
+    # 检查 session_state 中的模式（优先级更高）
+    if 'mode' in st.session_state:
+        mode = st.session_state['mode']
+
+    return mode
+
+
+def init_session_state():
+    """初始化session_state"""
+    if 'admin_logged_in' not in st.session_state:
+        st.session_state['admin_logged_in'] = False
+
+    if 'login_time' not in st.session_state:
+        st.session_state['login_time'] = None
+
+    if 'mode' not in st.session_state:
+        st.session_state['mode'] = get_page_mode()
 
 
 # ============ 全局状态管理 ============
@@ -40,76 +82,69 @@ def get_task_manager():
     return TaskManager(session_manager)
 
 
-# 初始化管理器
-session_manager = get_session_manager()
-task_manager = get_task_manager()
-
-
-def render_sidebar():
-    """渲染侧边栏"""
-    # 模式切换
-    mode = st.sidebar.radio(
-        "工作模式",
-        ["👤 前台操作", "🔧 后台管理"],
-        label_visibility="collapsed"
-    )
-
-    # 模式说明
-    if mode == "👤 前台操作":
-        st.sidebar.info("""
-        **前台操作模式**
-
-        - 📁 数据上传与预览
-        - 📈 统计分析与可视化
-        - 🔮 趋势预测
-        - ⚠️ 风险预警
-        - 🤖 AI智能分析
-        - 📝 报告生成
-        """)
-    else:
-        st.sidebar.info("""
-        **后台管理模式**
-
-        - 🤖 模型参数配置
-        - ⚠️ 风险阈值设置
-        - 📊 数据管理与清理
-        - 🎨 界面设置
-        """)
-
-    # 系统信息
-    st.sidebar.divider()
-
-    st.sidebar.write("#### 系统信息")
-
-    # 获取统计信息
-    datasets = session_manager.list_datasets(limit=1000)
-    tasks = task_manager.list_tasks(limit=1000)
-
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        st.metric("数据集", len(datasets))
-    with col2:
-        st.metric("任务", len(tasks))
-
-    # 清理旧任务按钮
-    if st.sidebar.button("🧹 清理旧任务", key="cleanup_tasks"):
-        count = task_manager.cleanup_old_tasks(days=7)
-        st.sidebar.success(f"已清理 {count} 个旧任务")
-        st.rerun()
-
-    return mode
-
+# ============ 主应用逻辑 ============
 
 def main():
     """主函数"""
-    # 渲染侧边栏
-    mode = render_sidebar()
+    # 初始化session_state
+    init_session_state()
 
-    # 根据模式渲染对应页面
-    if mode == "👤 前台操作":
-        render_frontend_page(session_manager, task_manager)
-    else:
+    # 加载自定义CSS
+    load_custom_css()
+
+    # 获取当前模式
+    mode = get_page_mode()
+
+    # 显示模式切换器（仅在前台显示）
+    if mode != 'admin':
+        st.markdown("""
+        <div class="mode-switcher">
+            <a href="?mode=frontend" class="mode-link {'active' if mode == 'frontend' else ''}">👤 前台操作</a>
+            <a href="?mode=admin" class="mode-link {'active' if mode == 'admin' else ''}">🔧 后台管理</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # 根据模式渲染不同的页面
+    if mode == 'admin':
+        # 检查是否需要登录
+        needs_login = not is_admin_logged_in()
+
+        if needs_login:
+            # 显示登录页面
+            render_login_page()
+            return
+
+        # 已登录，显示后台管理页面
+        render_admin_header()
+        render_logout_button()
+
+        st.markdown('<div class="admin-content">', unsafe_allow_html=True)
+
+        session_manager = get_session_manager()
+        task_manager = get_task_manager()
         render_backend_page(session_manager)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    else:
+        # 前台操作页面
+        session_manager = get_session_manager()
+        task_manager = get_task_manager()
+        render_frontend_page(session_manager, task_manager)
+
+    # 页脚
+    st.markdown("""
+    <div class="page-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="footer-text">© 2024 数据分析智能体</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">v2.0</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":

@@ -5,189 +5,21 @@
 """
 import streamlit as st
 import time
+from datetime import datetime
 from typing import Optional, List, Dict, Any, Callable
 import pandas as pd
 from pathlib import Path
 
 
 def load_custom_css():
-    """加载自定义CSS样式 (shadcn/ui 风格)"""
-    # 加载 shadcn 风格 CSS
-    css_path = Path(__file__).parent / "shadcn.css"
+    """加载自定义CSS样式"""
+    from pathlib import Path
+
+    # 加载 Supabase 风格 CSS 文件
+    css_path = Path(__file__).parent / "supabase-design.css"
     if css_path.exists():
         with open(css_path, 'r', encoding='utf-8') as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    
-    # 额外的自定义样式
-    st.markdown("""
-    <style>
-    /* 全局样式 */
-    .main-header {
-        font-size: 1.875rem;
-        font-weight: 600;
-        color: #09090b;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e4e4e7;
-    }
-    
-    .feature-card {
-        background: #ffffff;
-        border: 1px solid #e4e4e7;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        transition: all 0.15s ease;
-    }
-    
-    .feature-card:hover {
-        border-color: #18181b;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* 按钮组 */
-    .button-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    /* 统计数字 */
-    .stat-number {
-        font-size: 2.25rem;
-        font-weight: 700;
-        color: #18181b;
-        line-height: 1;
-    }
-    
-    .stat-label {
-        font-size: 0.875rem;
-        color: #71717a;
-        margin-top: 0.25rem;
-    }
-    
-    /* 状态标签 */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .status-badge.success {
-        background: #f0fdf4;
-        color: #16a34a;
-    }
-    
-    .status-badge.warning {
-        background: #fefce8;
-        color: #ca8a04;
-    }
-    
-    .status-badge.danger {
-        background: #fef2f2;
-        color: #dc2626;
-    }
-    
-    .status-badge.info {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-    
-    /* 功能卡片网格 */
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-    }
-    
-    /* 上传区域 */
-    .upload-zone {
-        border: 2px dashed #e4e4e7;
-        border-radius: 0.5rem;
-        padding: 3rem 2rem;
-        text-align: center;
-        background: #fafafa;
-        transition: all 0.2s ease;
-    }
-    
-    .upload-zone:hover {
-        border-color: #18181b;
-        background: #f4f4f5;
-    }
-    
-    /* 页面导航 */
-    .nav-tabs {
-        display: flex;
-        gap: 0.25rem;
-        background: #f4f4f5;
-        padding: 0.25rem;
-        border-radius: 0.5rem;
-    }
-    
-    .nav-tab {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #71717a;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        border: none;
-        background: transparent;
-    }
-    
-    .nav-tab:hover {
-        color: #18181b;
-    }
-    
-    .nav-tab.active {
-        background: #ffffff;
-        color: #18181b;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-    
-    /* 空状态 */
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        color: #71717a;
-    }
-    
-    .empty-state-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* 数据表格容器 */
-    .data-table-container {
-        border: 1px solid #e4e4e7;
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
-    
-    /* 风险等级颜色 */
-    .risk-high { color: #dc2626; }
-    .risk-medium { color: #ca8a04; }
-    .risk-low { color: #16a34a; }
-    
-    /* 进度条 */
-    .progress-bar {
-        height: 0.5rem;
-        background: #f4f4f5;
-        border-radius: 9999px;
-        overflow: hidden;
-    }
-    
-    .progress-bar-fill {
-        height: 100%;
-        background: #18181b;
-        border-radius: 9999px;
-        transition: width 0.3s ease;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 
 def render_multi_file_upload(label: str = "上传多个Excel文件") -> List:
@@ -515,29 +347,418 @@ def render_error_message(message: str):
     """, unsafe_allow_html=True)
 
 
-def render_success_message(message: str):
-    """渲染成功消息
-
-    Args:
-        message: 成功消息
-    """
-    st.markdown(f"""
-    <div class="success-message">
-        <strong>成功</strong>
-        <p>{message}</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-
 def render_warning_message(message: str):
-    """渲染警告消息
-
-    Args:
-        message: 警告消息
-    """
+    """渲染警告消息"""
     st.markdown(f"""
-    <div class="warning-message">
-        <strong>警告</strong>
-        <p>{message}</p>
+    <div class="supabase-alert supabase-alert-warning">
+        <div class="supabase-alert-icon">⚠️</div>
+        <div class="supabase-alert-content">
+            <p>{message}</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
+
+
+def render_success_message(message: str):
+    """渲染成功消息"""
+    st.markdown(f"""
+    <div class="supabase-alert supabase-alert-success">
+        <div class="supabase-alert-icon">✅</div>
+        <div class="supabase-alert-content">
+            <p>{message}</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ============ Supabase 风格组件 ============
+
+def supabase_card(title: str, icon: str, content: str = "", footer: str = ""):
+    """渲染 Supabase 风格卡片
+
+    Args:
+        title: 卡片标题
+        icon: 图标emoji
+        content: 卡片内容
+        footer: 底部信息
+    """
+    st.markdown(f"""
+    <div class="supabase-card">
+        <div class="supabase-card-content">
+            <div class="supabase-card-header">
+                <span class="supabase-card-icon">{icon}</span>
+                <h3 class="supabase-card-title">{title}</h3>
+            </div>
+            <div class="supabase-card-body">
+                {content}
+            </div>
+            {footer}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def supabase_button(
+    label: str,
+    icon: str = "",
+    variant: str = "primary",
+    on_click = None,
+    disabled: bool = False,
+    use_container_width: bool = False
+):
+    """渲染 Supabase 风格按钮
+
+    Args:
+        label: 按钮文字
+        icon: 图标emoji
+        variant: 'primary', 'secondary', 'ghost', 'destructive'
+        on_click: 点击回调函数
+        disabled: 是否禁用
+        use_container_width: 是否使用全宽
+    """
+    button_class = f"supabase-button supabase-button-{variant}"
+
+    # 构建属性
+    kwargs = {}
+    if icon:
+        kwargs['icon'] = icon
+    if disabled:
+        kwargs['disabled'] = True
+    if use_container_width:
+        kwargs['use_container_width'] = True
+
+    if variant == "primary":
+        kwargs['type'] = "primary"
+    elif variant == "secondary":
+        kwargs['type'] = "secondary"
+    elif variant == "ghost":
+        kwargs['type'] = "default"
+
+    # 额外的 on_click 包装
+    if on_click:
+        original_on_click = kwargs.get('on_click')
+        def wrapped_on_click():
+            if not disabled:
+                original_on_click()
+        kwargs['on_click'] = wrapped_on_click
+        return wrapped_on_click
+
+    st.button(label, key=kwargs, on_click=wrapped_on_click, **kwargs)
+
+    return button_class
+
+
+def supabase_input(
+    label: str,
+    placeholder: str = "",
+    value: str = "",
+    type: str = "text",
+    icon: str = "",
+    disabled: bool = False
+) -> str:
+    """渲染 Supabase 风格输入框
+
+    Args:
+        label: 标签
+        placeholder: 占位符
+        value: 默认值
+        type: 输入类型 ('text', 'number', 'password')
+        icon: 图标
+        disabled: 是否禁用
+    """
+    input_key = kwargs = {}
+
+    if icon:
+        input_key['icon'] = icon
+
+    if value:
+        input_key['value'] = value
+
+    if disabled:
+        input_key['disabled'] = True
+        input_key['help'] = placeholder
+
+    if type == "password":
+        input_key['type'] = "password"
+    else:
+        input_key['type'] = "default"
+
+    if type == "number":
+        return st.number_input(label, **input_key)
+    else:
+        return st.text_input(label, **input_key)
+
+
+def supabase_tag(text: str, variant: str = "default", icon: str = "") -> str:
+    """渲染 Supabase 风格标签
+
+    Args:
+        text: 标签文字
+        variant: 'default', 'emerald', 'blue', 'violet', 'pink'
+        icon: 图标emoji
+
+    Returns:
+        HTML 字符串
+    """
+    variant_classes = {
+        'default': 'supabase-tag-default',
+        'emerald': 'supabase-tag-emerald',
+        'blue': 'supabase-tag-blue',
+        'violet': 'supabase-tag-violet',
+        'pink': 'supabase-tag-pink'
+    }
+
+    tag_class = f"supabase-tag {variant_classes.get(variant, 'supabase-tag-default')}"
+
+    icon_html = f"<span class='supabase-tag-icon'>{icon}</span>" if icon else ""
+
+    return f"""
+    <span class="{tag_class}">
+        {icon_html}{text}
+    </span>
+    """
+
+
+def supabase_section_header(title: str, description: str = "", show_back: bool = False):
+    """渲染 Supabase 风格分区标题
+
+    Args:
+        title: 标题
+        description: 描述
+        show_back: 是否显示返回按钮
+    """
+    back_button = ""
+
+    if show_back:
+        back_button = st.button("← 返回", key=f"back_{title}", type="secondary", use_container_width=True)
+
+    st.markdown(f"""
+    <div class="supabase-section-header">
+        <div class="supabase-section-header-left">
+            <h2 class="supabase-section-title">{title}</h2>
+            {description}
+        </div>
+        {back_button}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def supabase_metric(label: str, value: str, delta: str = "", delta_color: str = "normal", icon: str = ""):
+    """渲染 Supabase 风格指标卡片
+
+    Args:
+        label: 标签
+        value: 显示值
+        delta: 变化值
+        delta_color: 'normal', 'positive', 'negative', 'warning'
+        icon: 图标emoji
+    """
+    color_class = f"supabase-metric-delta-{delta_color}"
+
+    delta_html = ""
+    if delta:
+        if delta_color == "positive":
+            delta_html = f"<span class='supabase-metric-up'>↑</span>"
+        elif delta_color == "negative":
+            delta_html = f"<span class='supabase-metric-down'>↓</span>"
+        elif delta_color == "warning":
+            delta_html = f"<span class='supabase-metric-warning'>⚠️</span>"
+
+    icon_html = f"<span class='supabase-metric-icon'>{icon}</span>" if icon else ""
+
+    st.markdown(f"""
+    <div class="supabase-metric {color_class}">
+        <div class="supabase-metric-header">
+            <span class="supabase-metric-label">{label}</span>
+            <span class="supabase-metric-value">{value}</span>
+            {delta_html}
+            {icon_html}
+        </div>
+        <p class="supabase-metric-delta">{delta}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def supabase_stat_grid(items: list, cols: int = 4, icon_map: dict = None):
+    """渲染 Supabase 风格统计数据网格
+
+    Args:
+        items: 项目列表
+        cols: 列数
+        icon_map: 图标映射字典 {label: icon}
+    """
+    if not items:
+        return ""
+
+    rows = []
+    for i in range(0, len(items), cols):
+        row_items = items[i * cols:(i+1)]
+        rows.append(row_items)
+
+    for row in rows:
+        cols = st.columns(cols)
+        for idx, item in enumerate(row_items):
+            label = item.get('label', str(idx + 1))
+            value = item.get('value', '')
+            icon = icon_map.get(label, '') if icon_map else '📊'
+
+            cols[idx].metric(label=label, value=f"{value:,}", delta_color='normal', icon=icon)
+
+
+def supabase_table(headers: list, data: list, max_rows: int = 10):
+    """渲染 Supabase 风格表格
+
+    Args:
+        headers: 表头列表
+        data: 数据列表
+        max_rows: 最大显示行数
+    """
+    if not headers or not data:
+        return
+
+    # 处理表头
+    header_html = ""
+    for header in headers:
+        header_html += f"<th class='supabase-table-head'>{header}</th>"
+
+    # 处理数据行
+    rows_html = ""
+    for row in data[:max_rows]:
+        row_html = "<tr>"
+        for value in row:
+            row_html += f"<td class='supabase-table-cell'>{value}</td>"
+        row_html += "</tr>"
+        rows_html += row_html
+
+    # 构建完整HTML
+    table_html = f"""
+    <div class="supabase-table-container">
+        <div class="supabase-table">
+            <table>
+                <thead>
+                    <tr>
+                        {header_html}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows_html}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    """
+    st.markdown(table_html, unsafe_allow_html=True)
+
+
+# ============ 登录和认证相关组件 ============
+
+def render_login_page() -> bool:
+    """渲染登录页面
+
+    Returns:
+        是否登录成功
+    """
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">🔐 系统管理</h1>
+            <p class="login-subtitle">请输入管理员密码以访问后台管理功能</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 登录表单
+    password = st.text_input(
+        "管理员密码",
+        type="password",
+        placeholder="请输入密码...",
+        help="默认密码: admin123"
+    )
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        if st.button("登录", type="primary", use_container_width=True):
+            if check_password(password):
+                st.session_state['admin_logged_in'] = True
+                st.session_state['login_time'] = datetime.now().isoformat()
+                render_success_message("登录成功！正在跳转...")
+                st.rerun()
+            else:
+                render_error_message("密码错误，请重试")
+
+    with col2:
+        if st.button("返回前台", use_container_width=True):
+            st.session_state['mode'] = 'frontend'
+            st.rerun()
+
+    return st.session_state.get('admin_logged_in', False)
+
+
+def check_password(password: str) -> bool:
+    """验证密码
+
+    Args:
+        password: 输入的密码
+
+    Returns:
+        密码是否正确
+    """
+    # 从数据库或环境变量获取密码
+    import os
+    admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+
+    return password == admin_password
+
+
+def is_admin_logged_in() -> bool:
+    """检查是否已登录
+
+    Returns:
+        是否已登录管理员
+    """
+    return st.session_state.get('admin_logged_in', False)
+
+
+def require_admin_login():
+    """要求管理员登录，如果未登录则显示登录页面"""
+    if not is_admin_logged_in():
+        render_login_page()
+        return True
+    return False
+
+
+def render_admin_header():
+    """渲染后台管理页面头部"""
+    st.markdown("""
+    <div class="admin-header">
+        <div class="admin-header-left">
+            <h1>⚙️ 系统管理</h1>
+            <p>管理模型配置、数据、系统设置</p>
+        </div>
+        <div class="admin-header-right">
+            <span class="admin-badge">管理员模式</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_logout_button():
+    """渲染登出按钮"""
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    with col1:
+        if st.button("🏠 返回前台", key="return_frontend", use_container_width=True):
+            st.session_state['mode'] = 'frontend'
+            st.rerun()
+
+    with col2:
+        if st.button("🔄 刷新", key="admin_refresh", use_container_width=True):
+            st.rerun()
+
+    with col3:
+        if st.button("🚪 登出", key="admin_logout", type="secondary", use_container_width=True):
+            st.session_state['admin_logged_in'] = False
+            del st.session_state['login_time']
+            render_success_message("已登出")
+            st.rerun()

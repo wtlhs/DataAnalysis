@@ -1,0 +1,1066 @@
+/* ========================================
+   Supabase 风格设计系统 - 数据分析智能体（浅色主题）
+   ======================================== */
+
+/* ========================================
+   1. 调色系统 - 浅色主题
+   ======================================== */
+
+:root {
+    /* 浅色主题背景 */
+    --bg-background: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #f1f5f9;
+    --bg-elevated: #ffffff;
+
+    /* 文字颜色 */
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --text-inverse: #ffffff;
+
+    /* 边框和分割线 */
+    --border: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --border-strong: #cbd5e1;
+
+    /* 功能色（鲜艳但专业） */
+    --accent-blue: #3b82f6;
+    --accent-emerald: #10b981;
+    --accent-violet: #8b5cf6;
+    --accent-pink: #ec4899;
+
+    /* 玻璃拟态渐变 */
+    --gradient-blue: linear-gradient(135deg, var(--accent-blue) 0%, #eff6ff 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--accent-emerald) 0%, #ecfdf5 100%);
+    --gradient-violet: linear-gradient(135deg, var(--accent-violet) 0%, #f5f3ff 100%);
+    --gradient-pink: linear-gradient(135deg, var(--accent-pink) 0%, #fdf2f8 100%);
+}
+
+    /* 阴影系统 - 浅色主题 */
+    --shadow-sm:
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(0, 0, 0, 0.06);
+
+    --shadow:
+        0 4px 8px rgba(0, 0, 0, 0.08),
+        0 0 10px 16px rgba(0, 0, 0, 0.06),
+        0 0 20px -3px rgba(59, 130, 246, 0.15);
+
+    --shadow-lg:
+        0 10px 15px -2px rgba(0, 0, 0, 0.08),
+        0 0 20px -3px rgba(0, 0, 0, 0.06),
+        0 0 30px 5px rgba(59, 130, 246, 0.12);
+
+    --shadow-glow:
+        0 0 20px rgba(59, 130, 246, 0.25),
+        0 0 0 1px rgba(59, 130, 246, 0.3);
+
+    /* 圆角系统 */
+    --radius-sm: 0.25rem;
+    --radius: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+
+    /* 容器宽度 */
+    --container-max-width: 1600px;
+}
+
+/* ========================================
+   2. 间距系统
+   ======================================== */
+
+:root {
+    /* 组件间距 */
+    --space-xs: 0.25rem;
+    --space-sm: 0.375rem;
+    --space-md: 0.625rem;
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+}
+
+/* ========================================
+   3. 阴影系统（发光效果）
+   ======================================== */
+
+.glow-blue {
+    box-shadow:
+        0 0 20px rgba(59, 130, 246, 0.3),
+        0 0 0 1px rgba(59, 130, 246, 0.6),
+        0 0 30px rgba(59, 130, 246, 0.3),
+        0 0 40px rgba(59, 130, 246, 0.4);
+}
+
+/* ========================================
+   4. 字体系统
+   ======================================== */
+
+:root {
+    /* 主字体栈 */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* 等宽字体 */
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+    /* 字体大小 */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 2rem;
+    --text-3xl: 2.5rem;
+
+    /* 字体粗细 */
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+}
+
+/* ========================================
+   5. 字体大小和粗细使用
+   ======================================== */
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+
+.font-normal { font-weight: var(--font-normal); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+
+/* ========================================
+   6. 基础重置
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-background);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+}
+
+/* ========================================
+   7. Streamlit 容器样式覆盖
+   ======================================== */
+
+[data-testid="stApp"] {
+    background-color: var(--bg-background);
+    color: var(--text-primary);
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    max-width: 1600px;
+}
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
+    border-right: 1px solid var(--border);
+}
+
+/* 隐藏默认侧边栏导航 */
+[data-testid="stSidebarNav"] {
+    display: none;
+}
+
+/* ========================================
+   8. 主容器
+   ======================================== */
+
+.app-container {
+    background: var(--bg-background);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* ========================================
+   9. 卡片系统
+   ======================================== */
+
+.supabase-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.supabase-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0) 100%);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.supabase-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* 玻璃拟态发光效果 */
+.supabase-card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        100px at 0,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    filter: blur(40px);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.supabase-card-glow::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: calc(0.625rem - 2px);
+    background: var(--bg-surface);
+}
+
+/* 卡片内容 */
+.supabase-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.supabase-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-sm);
+}
+
+.supabase-card-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.supabase-card-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.supabase-card-body {
+    padding-top: var(--space-sm);
+}
+
+/* ========================================
+   10. 按钮系统
+   ======================================== */
+
+.supabase-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-medium);
+    font-size: var(--text-base);
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--gradient-blue);
+    color: white;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.supabase-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.supabase-button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+    background: var(--gradient-blue);
+}
+
+.supabase-button:active {
+    transform: translateY(0);
+}
+
+/* 发光效果 */
+.supabase-button-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        100px at 50% 0,
+        rgba(59, 130, 246, 0.6) 0%,
+        transparent 50%
+    );
+    filter: blur(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.supabase-button:hover .supabase-button-glow {
+    opacity: 0.6;
+}
+
+/* 次要按钮 */
+.supabase-button-secondary {
+    background: var(--bg-surface);
+    border-color: var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.supabase-button-secondary:hover {
+    background: var(--bg-surface-elevated);
+    border-color: var(--border);
+}
+
+/* 幽灵按钮 */
+.supabase-button-ghost {
+    background: transparent;
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.supabase-button-ghost:hover {
+    background: var(--bg-surface);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+/* ========================================
+   11. 输入框系统
+   ======================================== */
+
+.supabase-input {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.supabase-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow:
+        0 0 0 1px rgba(59, 130, 246, 0.4),
+        0 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 输入标签 */
+.supabase-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.supabase-label-required {
+    color: var(--accent-violet);
+}
+
+/* Placeholder */
+.supabase-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ========================================
+   12. 标签系统
+   ======================================== */
+
+.supabase-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.25rem 0.5rem var(--space-xs);
+    border-radius: 9999px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    border: 1px solid transparent;
+}
+
+.supabase-tag-default {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.supabase-tag-emerald {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: white;
+}
+
+.supabase-tag-blue {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+    color: white;
+}
+
+.supabase-tag-violet {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.2);
+    color: white;
+}
+
+.supabase-tag-pink {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.2);
+    color: white;
+}
+
+/* ========================================
+   13. 动画系统
+   ======================================== */
+
+/* 页面加载动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 内容进入动画 */
+@keyframes staggerIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-stagger-in {
+    animation: staggerIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 加载动画 */
+@keyframes shimmer {
+    0% { background-position: -200% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+.animate-shimmer {
+    animation: shimmer 1.5s infinite linear;
+    background: linear-gradient(
+        90deg,
+        var(--bg-surface) 25%,
+        var(--bg-surface-elevated) 50%,
+        var(--bg-surface) 50%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-sm);
+}
+
+/* ========================================
+   14. 加载骨架屏
+   ======================================== */
+
+.supabase-skeleton {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    height: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.supabase-skeleton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    border-radius: inherit;
+}
+
+.supabase-skeleton-text {
+    background: var(--bg-surface-elevated);
+    height: 0.75rem;
+    border-radius: var(--radius-sm);
+    width: 40%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* ========================================
+   15. 进度条
+   ======================================== */
+
+@keyframes progressPulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        opacity: 0.8;
+    }
+    50%, 0% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        opacity: 1;
+    }
+}
+
+.supabase-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.supabase-progress-bar {
+    height: 0.5rem;
+    background: var(--bg-surface);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.supabase-progress-fill {
+    height: 100%;
+    background: var(--gradient-blue);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+    animation: progressPulse 2s infinite;
+}
+
+/* ========================================
+   16. 页面头部
+   ======================================== */
+
+.supabase-page-header {
+    background: linear-gradient(90deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-lg) 0;
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.supabase-page-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.supabase-page-subtitle {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    font-weight: var(--font-normal);
+}
+
+/* ========================================
+   17. 侧边栏样式
+   ======================================== */
+
+[data-testid="stSidebar"] .supabase-sidebar {
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    padding: var(--space-md);
+}
+
+.supabase-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    width: 100%;
+}
+
+.supabase-nav-item:hover {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.supabase-nav-item.active {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+}
+
+.supabase-nav-item-icon {
+    font-size: 1.25rem;
+    margin-right: var(--space-xs);
+}
+
+/* ========================================
+   18. 工具提示系统
+   ======================================== */
+
+.supabase-tooltip {
+    position: relative;
+}
+
+.supabase-tooltip-content {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    max-width: 300px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+
+.supabase-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--accent-blue);
+    border-bottom: 6px solid var(--accent-blue);
+    border-bottom-right: 6px solid transparent;
+    border-top: 6px solid var(--accent-blue);
+}
+
+/* ========================================
+   19. 通知徽章
+   ======================================== */
+
+.supabase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.25rem 0.5rem var(--space-xs);
+    border-radius: 9999px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+}
+
+.supabase-badge-icon {
+    font-size: 1rem;
+}
+
+/* ========================================
+   20. 模态对话框
+   ======================================== */
+
+.supabase-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInUp 0.2s ease;
+}
+
+.supabase-modal {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-width: 500px;
+    padding: var(--space-lg);
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.supabase-modal-header {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.supabase-modal-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.supabase-modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--space-xs);
+    font-size: 1.25rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.supabase-modal-close:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+/* ========================================
+   21. 表格系统
+   ======================================== */
+
+.supabase-table-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: auto;
+}
+
+.supabase-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.supabase-table thead {
+    background: linear-gradient(90deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.supabase-table td {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.supabase-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* ========================================
+   22. 状态指示器
+   ======================================== */
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.supabase-spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--border-subtle);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   23. 分页系统
+   ======================================== */
+
+.supabase-pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+.supabase-pagination-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.supabase-pagination-item:hover:not(:disabled) {
+    background: var(--bg-surface-elevated);
+    border-color: var(--border);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.supabase-pagination-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   24. 实用工具类
+   ======================================== */
+
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.gap-xl { gap: var(--space-xl); }
+.gap-2xl { gap: var(--space-2xl); }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.text-center { text-align: center; }
+.w-full { width: 100%; }
+
+/* ========================================
+   25. 警告和提示系统
+   ======================================== */
+
+.supabase-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    margin: var(--space-sm) 0;
+    background: var(--bg-surface);
+}
+
+.supabase-alert-icon {
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+}
+
+.supabase-alert-content {
+    flex: 1;
+}
+
+.supabase-alert-content p {
+    margin: 0;
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* 警告提示 */
+.supabase-alert-warning {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.05);
+}
+
+.supabase-alert-warning .supabase-alert-icon {
+    color: #f59e0b;
+}
+
+/* 成功提示 */
+.supabase-alert-success {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.supabase-alert-success .supabase-alert-icon {
+    color: #10b981;
+}
+
+/* ========================================
+   26. 登录页面样式
+   ======================================== */
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    padding: var(--space-2xl);
+}
+
+.login-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2xl);
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.login-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-md) 0;
+}
+
+.login-subtitle {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-xl) 0;
+}
+
+/* ========================================
+   27. 模式切换器样式
+   ======================================== */
+
+.mode-switcher {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.mode-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+    transition: all 0.2s ease;
+}
+
+.mode-link:hover {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+}
+
+.mode-link.active {
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* ========================================
+   28. 后台管理页面样式
+   ======================================== */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg) var(--space-xl);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-header-left h1 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.admin-header-left p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: var(--space-xs) 0 0 0;
+}
+
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: linear-gradient(135deg, var(--accent-emerald) 0%, #ecfdf5 100%);
+    color: #064e3b;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+}
+
+.admin-content {
+    padding: var(--space-xl);
+}
+
+/* ========================================
+   29. 页脚样式
+   ======================================== */
+
+.page-footer {
+    margin-top: var(--space-2xl);
+    padding: var(--space-lg) var(--space-xl);
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+.footer-left,
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.footer-text {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
