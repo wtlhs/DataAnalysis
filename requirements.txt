@@ -1,0 +1,27 @@
+# Web Framework
+streamlit>=1.28.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.0
+xlrd>=2.0.0
+
+# AI Models
+openai>=1.0.0
+anthropic>=0.8.0
+
+# Visualization
+plotly>=5.17.0
+matplotlib>=3.7.0
+
+# Time Series Prediction
+# prophet>=1.1.4  # Prophet在Windows上安装困难，如需使用请手动安装
+statsmodels>=0.14.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# Database
+sqlalchemy>=2.0.0
