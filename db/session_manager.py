@@ -11,7 +11,7 @@ from pathlib import Path
 import json
 
 from .models import (
-    Base, Dataset, Analysis, Report, ChatHistory, Task, Preference
+    Base, Dataset, Analysis, Report, ChatHistory, Task, Preference, ApiConfig
 )
 import pandas as pd
 
@@ -517,5 +517,154 @@ class SessionManager:
         try:
             prefs = session.query(Preference).all()
             return {p.key: p.value for p in prefs}
+        finally:
+            session.close()
+
+    # ============ API Config 操作 ============
+
+    def save_api_config(
+        self,
+        provider: str,
+        api_key: str,
+        api_base: Optional[str] = None,
+        model_name: Optional[str] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 4000
+    ) -> int:
+        """保存或更新API配置
+
+        Args:
+            provider: 提供商 (openai, anthropic, zhipu)
+            api_key: API密钥
+            api_base: API Base URL（可选）
+            model_name: 模型名称
+            temperature: 温度参数
+            max_tokens: 最大token数
+
+        Returns:
+            配置ID
+        """
+        session = self.get_session()
+        try:
+            # 查找是否已存在
+            config = session.query(ApiConfig).filter_by(provider=provider).first()
+            if config:
+                config.api_key = api_key
+                config.api_base = api_base
+                config.model_name = model_name
+                config.temperature = temperature
+                config.max_tokens = max_tokens
+            else:
+                config = ApiConfig(
+                    provider=provider,
+                    api_key=api_key,
+                    api_base=api_base,
+                    model_name=model_name,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                session.add(config)
+
+            session.commit()
+            session.refresh(config)
+            return config.id
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"保存API配置失败: {str(e)}")
+        finally:
+            session.close()
+
+    def get_api_config(self, provider: str) -> Optional[Dict[str, Any]]:
+        """获取API配置
+
+        Args:
+            provider: 提供商
+
+        Returns:
+            配置字典，如果不存在则返回None
+        """
+        session = self.get_session()
+        try:
+            config = session.query(ApiConfig).filter_by(provider=provider).first()
+            return config.to_dict(include_key=True) if config else None
+        finally:
+            session.close()
+
+    def get_active_api_config(self) -> Optional[Dict[str, Any]]:
+        """获取当前激活的API配置
+
+        Returns:
+            配置字典，如果不存在则返回None
+        """
+        session = self.get_session()
+        try:
+            config = session.query(ApiConfig).filter_by(is_active=True).first()
+            if not config:
+                # 如果没有激活的，返回第一个
+                config = session.query(ApiConfig).first()
+            return config.to_dict(include_key=True) if config else None
+        finally:
+            session.close()
+
+    def list_api_configs(self) -> List[Dict[str, Any]]:
+        """列出所有API配置
+
+        Returns:
+            配置列表
+        """
+        session = self.get_session()
+        try:
+            configs = session.query(ApiConfig).all()
+            return [c.to_dict() for c in configs]
+        finally:
+            session.close()
+
+    def set_active_api_config(self, provider: str) -> bool:
+        """设置激活的API配置
+
+        Args:
+            provider: 提供商
+
+        Returns:
+            是否成功
+        """
+        session = self.get_session()
+        try:
+            # 取消所有激活状态
+            session.query(ApiConfig).update({'is_active': False})
+
+            # 激活指定配置
+            config = session.query(ApiConfig).filter_by(provider=provider).first()
+            if config:
+                config.is_active = True
+                session.commit()
+                return True
+            return False
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"设置激活API配置失败: {str(e)}")
+        finally:
+            session.close()
+
+    def delete_api_config(self, provider: str) -> bool:
+        """删除API配置
+
+        Args:
+            provider: 提供商
+
+        Returns:
+            是否成功
+        """
+        session = self.get_session()
+        try:
+            config = session.query(ApiConfig).filter_by(provider=provider).first()
+            if config:
+                session.delete(config)
+                session.commit()
+                return True
+            return False
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"删除API配置失败: {str(e)}")
         finally:
             session.close()

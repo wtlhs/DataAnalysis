@@ -2,21 +2,18 @@
 配置管理模块
 
 管理API密钥、模型配置、系统参数等
+密钥从数据库读取，确保安全性
 """
 import os
 from dataclasses import dataclass, field
 from typing import Optional
 from pathlib import Path
-from dotenv import load_dotenv
-
-# 加载环境变量
-load_dotenv()
 
 
 @dataclass
 class ModelConfig:
     """模型配置"""
-    provider: str = "openai"  # openai, anthropic
+    provider: str = "openai"  # openai, anthropic, zhipu
     model_name: str = "gpt-4o"
     temperature: float = 0.7
     max_tokens: int = 4000
@@ -96,43 +93,108 @@ class Settings:
     """全局配置管理器"""
 
     _instance: Optional['Settings'] = None
+    _session_manager = None
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
+    def _get_session_manager(self):
+        """获取会话管理器"""
+        if Settings._session_manager is None:
+            from db.session_manager import SessionManager
+            Settings._session_manager = SessionManager(db_path="data/data_analysis.db")
+        return Settings._session_manager
+
     def __init__(self):
         if not hasattr(self, 'initialized'):
             self.app = AppConfig()
-            self.model = ModelConfig(
-                provider=os.getenv("MODEL_PROVIDER", "openai"),
-                model_name=os.getenv("MODEL_NAME", "gpt-4o"),
-                temperature=float(os.getenv("MODEL_TEMPERATURE", "0.7")),
-                max_tokens=int(os.getenv("MODEL_MAX_TOKENS", "4000")),
-                api_key=os.getenv("OPENAI_API_KEY", ""),
-                api_base=os.getenv("OPENAI_API_BASE")
-            )
             self.risk = RiskThresholds()
             self.data = DataConfig(
                 max_file_size_mb=int(os.getenv("MAX_FILE_SIZE_MB", "500")),
                 chunk_size=int(os.getenv("CHUNK_SIZE", "10000"))
             )
+            # 从数据库加载模型配置
+            self.model = self._load_model_config()
             self.initialized = True
+
+    def _load_model_config(self) -> ModelConfig:
+        """从数据库加载模型配置"""
+        try:
+            session_manager = self._get_session_manager()
+            api_config = session_manager.get_active_api_config()
+            if api_config and api_config.get('api_key'):
+                return ModelConfig(
+                    provider=api_config.get('provider', 'openai'),
+                    model_name=api_config.get('model_name', 'gpt-4o'),
+                    temperature=api_config.get('temperature', 0.7),
+                    max_tokens=api_config.get('max_tokens', 4000),
+                    api_key=api_config.get('api_key', ''),
+                    api_base=api_config.get('api_base')
+                )
+        except Exception:
+            pass  # 数据库连接失败时使用默认值
+
+        # 返回默认配置
+        return ModelConfig(
+            provider="openai",
+            model_name="gpt-4o",
+            temperature=0.7,
+            max_tokens=4000,
+            api_key="",
+            api_base=None
+        )
+
+    def reload_model_config(self):
+        """重新加载模型配置"""
+        self.model = self._load_model_config()
 
     def get_model_config(self, provider: Optional[str] = None) -> ModelConfig:
         """获取模型配置"""
         if provider and provider != self.model.provider:
-            # 返回不同provider的配置
-            if provider == "anthropic":
-                return ModelConfig(
-                    provider="anthropic",
-                    model_name=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
-                    temperature=float(os.getenv("ANTHROPIC_TEMPERATURE", "0.7")),
-                    max_tokens=int(os.getenv("ANTHROPIC_MAX_TOKENS", "4000")),
-                    api_key=os.getenv("ANTHROPIC_API_KEY", "")
-                )
+            # 从数据库获取指定provider的配置
+            try:
+                session_manager = self._get_session_manager()
+                api_config = session_manager.get_api_config(provider)
+                if api_config and api_config.get('api_key'):
+                    return ModelConfig(
+                        provider=api_config.get('provider', provider),
+                        model_name=api_config.get('model_name', 'gpt-4o'),
+                        temperature=api_config.get('temperature', 0.7),
+                        max_tokens=api_config.get('max_tokens', 4000),
+                        api_key=api_config.get('api_key', ''),
+                        api_base=api_config.get('api_base')
+                    )
+            except Exception:
+                pass
         return self.model
+
+    def save_api_config(
+        self,
+        provider: str,
+        api_key: str,
+        api_base: Optional[str] = None,
+        model_name: Optional[str] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 4000
+    ) -> bool:
+        """保存API配置到数据库"""
+        try:
+            session_manager = self._get_session_manager()
+            session_manager.save_api_config(
+                provider=provider,
+                api_key=api_key,
+                api_base=api_base,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            # 重新加载配置
+            self.reload_model_config()
+            return True
+        except Exception as e:
+            raise Exception(f"保存API配置失败: {str(e)}")
 
     def update_model(self, provider: str, model_name: str):
         """更新模型配置"""
@@ -144,6 +206,8 @@ class Settings:
         if self.model.provider == "openai" and not self.model.api_key:
             return False
         if self.model.provider == "anthropic" and not self.model.api_key:
+            return False
+        if self.model.provider == "zhipu" and not self.model.api_key:
             return False
         return True
 

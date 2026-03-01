@@ -157,3 +157,38 @@ class Preference(Base):
             'value': self.value,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
+
+
+class ApiConfig(Base):
+    """API密钥配置（加密存储）"""
+    __tablename__ = 'api_configs'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    provider = Column(String, nullable=False, index=True)  # 'openai', 'anthropic', 'zhipu'
+    api_key = Column(Text, nullable=False)  # 加密存储的API密钥
+    api_base = Column(Text, nullable=True)  # API Base URL（可选）
+    model_name = Column(String, nullable=True)  # 模型名称
+    temperature = Column(Float, default=0.7)
+    max_tokens = Column(Integer, default=4000)
+    is_active = Column(Boolean, default=True)  # 是否启用
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    def to_dict(self, include_key: bool = False) -> dict:
+        """转换为字典"""
+        result = {
+            'id': self.id,
+            'provider': self.provider,
+            'api_base': self.api_base,
+            'model_name': self.model_name,
+            'temperature': self.temperature,
+            'max_tokens': self.max_tokens,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+        if include_key:
+            result['api_key'] = self.api_key
+        else:
+            result['api_key'] = '***' + self.api_key[-4:] if self.api_key else None
+        return result

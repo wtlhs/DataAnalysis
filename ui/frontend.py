@@ -173,31 +173,31 @@ def render_data_upload_section(session_manager):
     col1, col2 = st.columns([1, 4])
     with col1:
         if uploaded_files and st.button("🚀 开始上传", type="primary", use_container_width=True):
-        from config.settings import settings
+            from config.settings import settings
 
-        with st.spinner("正在处理文件..."):
-            try:
-                # 准备文件数据
-                file_list = [(f.name, f.getvalue()) for f in uploaded_files]
+            with st.spinner("正在处理文件..."):
+                try:
+                    # 准备文件数据
+                    file_list = [(f.name, f.getvalue()) for f in uploaded_files]
 
-                # 加载文件
-                loader = st.session_state.loader
-                datasets = loader.load_multiple_files(
-                    file_list,
-                    str(settings.app.upload_dir),
-                    session_manager
-                )
+                    # 加载文件
+                    loader = st.session_state.loader
+                    datasets = loader.load_multiple_files(
+                        file_list,
+                        str(settings.app.upload_dir),
+                        session_manager
+                    )
 
-                st.success(f"✅ 成功上传 {len(datasets)} 个文件！")
+                    st.success(f"✅ 成功上传 {len(datasets)} 个文件！")
 
-                # 设置第一个数据集为激活状态
-                if datasets:
-                    first_id = list(datasets.keys())[0]
-                    session_manager.set_active_dataset(first_id)
-                    st.rerun()
+                    # 设置第一个数据集为激活状态
+                    if datasets:
+                        first_id = list(datasets.keys())[0]
+                        session_manager.set_active_dataset(first_id)
+                        st.rerun()
 
-            except Exception as e:
-                render_error_message(f"上传失败: {str(e)}")
+                except Exception as e:
+                    render_error_message(f"上传失败: {str(e)}")
 
     # 显示数据集列表
     datasets = session_manager.list_datasets()

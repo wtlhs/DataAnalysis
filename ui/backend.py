@@ -2,6 +2,7 @@
 后台管理页面
 
 提供模型配置、风险阈值、数据管理、系统设置等功能
+密钥存储在数据库中，确保安全性
 """
 import streamlit as st
 from typing import Dict, Any
@@ -39,7 +40,7 @@ def render_backend_page(session_manager):
     ])
 
     with tab1:
-        render_model_config()
+        render_model_config(session_manager)
     with tab2:
         render_risk_thresholds()
     with tab3:
@@ -48,67 +49,142 @@ def render_backend_page(session_manager):
         render_ui_settings()
 
 
-def render_model_config():
+def render_model_config(session_manager):
     """模型配置"""
     st.subheader("🤖 AI模型配置")
+
+    # 获取已保存的配置
+    current_config = session_manager.get_active_api_config()
+
+    # 模型提供商映射
+    provider_map = {
+        "openai": "openai",
+        "智谱AI(GLM)": "zhipu",
+        "anthropic": "anthropic"
+    }
+
+    # 当前选择的提供商
+    current_provider = current_config.get('provider', 'openai') if current_config else 'openai'
+
+    # 反向映射显示
+    display_provider = [k for k, v in provider_map.items() if v == current_provider]
+    default_idx = list(provider_map.values()).index(current_provider) if current_provider in provider_map.values() else 0
 
     # 模型提供商
     model_provider = st.selectbox(
         "模型提供商",
-        ["openai", "智谱AI(GLM)", "anthropic"],
-        index=0
+        list(provider_map.keys()),
+        index=default_idx
     )
+
+    provider = provider_map[model_provider]
+
+    # 获取该provider的配置
+    provider_config = session_manager.get_api_config(provider) if provider else None
 
     # 根据提供商显示不同的配置
     if model_provider == "openai":
-        render_openai_config()
+        saved = render_openai_config(provider_config)
     elif model_provider == "智谱AI(GLM)":
-        render_zhipu_config()
-    elif model_provider == "anthropic":
-        render_anthropic_config()
+        saved = render_zhipu_config(provider_config)
+    else:
+        saved = render_anthropic_config(provider_config)
 
-    # 应用配置
-    if st.button("💾 保存配置", type="primary"):
-        # 这里需要实际保存到环境变量或配置文件
-        # 临时使用session_state
-        st.session_state['model_config_saved'] = True
-        render_success_message("配置已保存！")
+    # 保存配置
+    if saved:
+        try:
+            settings.reload_model_config()
+            render_success_message("✅ 配置已保存到数据库！")
+        except Exception as e:
+            render_error_message(f"保存失败: {str(e)}")
+
+    # 显示已保存的配置列表
+    st.divider()
+    st.write("**已保存的配置**")
+    configs = session_manager.list_api_configs()
+    if configs:
+        for config in configs:
+            col1, col2, col3 = st.columns([2, 2, 1])
+            with col1:
+                st.write(f"**{config['provider']}**")
+                st.caption(f"模型: {config.get('model_name', 'N/A')}")
+            with col2:
+                st.write(f"API Key: {config.get('api_key', 'N/A')}")
+            with col3:
+                if config.get('is_active'):
+                    st.success("✅ 激活")
+                elif st.button("设为默认", key=f"set_default_{config['provider']}"):
+                    session_manager.set_active_api_config(config['provider'])
+                    settings.reload_model_config()
+                    st.rerun()
+    else:
+        st.info("暂无保存的配置，请在上方添加")
 
 
-def render_openai_config():
+def render_openai_config(provider_config: Dict = None):
     """OpenAI配置"""
     st.write("**OpenAI / 兼容API 配置**")
 
+    # 获取当前值
+    default_key = provider_config.get('api_key', '') if provider_config else ''
+    default_base = provider_config.get('api_base', '') if provider_config else ''
+    default_model = provider_config.get('model_name', 'gpt-4o') if provider_config else 'gpt-4o'
+    default_temp = provider_config.get('temperature', 0.7) if provider_config else 0.7
+    default_tokens = provider_config.get('max_tokens', 4000) if provider_config else 4000
+
+    model_options = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
+    default_model_idx = model_options.index(default_model) if default_model in model_options else 0
+
     api_key = st.text_input(
-        "API密钥",
+        "API密钥 *",
         type="password",
-        value=settings.model.api_key if settings.model.api_key else "",
+        value=default_key,
         help="OpenAI API Key"
     )
 
     api_base = st.text_input(
         "API Base URL (可选)",
-        value=settings.model.api_base or "",
+        value=default_base,
         help="例如: https://api.openai.com/v1"
     )
 
     model_name = st.selectbox(
         "模型名称",
-        ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
-        index=0
+        model_options,
+        index=default_model_idx
     )
 
     temperature = st.slider(
         "Temperature",
-        0.0, 2.0, 0.7, 0.1,
+        0.0, 2.0, default_temp, 0.1,
         help="控制输出的随机性，越高越有创造性"
     )
 
     max_tokens = st.number_input(
         "最大Token数",
-        1000, 8000, 4000, 100,
+        1000, 8000, default_tokens, 100,
         help="响应的最大长度"
     )
+
+    # 保存按钮
+    saved = False
+    if st.button("💾 保存 OpenAI 配置", type="primary"):
+        if not api_key:
+            render_error_message("请输入API密钥")
+        else:
+            from db.session_manager import SessionManager
+            session_mgr = SessionManager(db_path="data/data_analysis.db")
+            session_mgr.save_api_config(
+                provider="openai",
+                api_key=api_key,
+                api_base=api_base if api_base else None,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            # 设置为激活
+            session_mgr.set_active_api_config("openai")
+            saved = True
 
     st.info("""
     💡 **提示**：
@@ -117,32 +193,63 @@ def render_openai_config():
     - gpt-4o-mini: 更快的GPT-4模型
     """)
 
+    return saved
 
-def render_zhipu_config():
+
+def render_zhipu_config(provider_config: Dict = None):
     """智谱AI配置"""
     st.write("**智谱AI GLM 配置**")
 
+    # 获取当前值
+    default_key = provider_config.get('api_key', '') if provider_config else ''
+    default_model = provider_config.get('model_name', 'glm-5') if provider_config else 'glm-5'
+    default_temp = provider_config.get('temperature', 0.7) if provider_config else 0.7
+    default_tokens = provider_config.get('max_tokens', 4000) if provider_config else 4000
+
+    model_options = ["glm-5", "glm-4", "glm-4-flash", "glm-3-turbo", "glm-4-air", "glm-4-long"]
+    default_model_idx = model_options.index(default_model) if default_model in model_options else 0
+
     api_key = st.text_input(
-        "API密钥",
+        "API密钥 *",
         type="password",
+        value=default_key,
         help="智谱AI API Key"
     )
 
     model_name = st.selectbox(
         "模型名称",
-        ["glm-5", "glm-4", "glm-4-flash", "glm-3-turbo", "glm-4-air", "glm-4-long"],
-        index=0
+        model_options,
+        index=default_model_idx
     )
 
     temperature = st.slider(
         "Temperature",
-        0.0, 2.0, 0.7, 0.1
+        0.0, 2.0, default_temp, 0.1
     )
 
     max_tokens = st.number_input(
         "最大Token数",
-        1000, 8000, 4000, 100
+        1000, 8000, default_tokens, 100
     )
+
+    # 保存按钮
+    saved = False
+    if st.button("💾 保存智谱AI 配置", type="primary"):
+        if not api_key:
+            render_error_message("请输入API密钥")
+        else:
+            from db.session_manager import SessionManager
+            session_mgr = SessionManager(db_path="data/data_analysis.db")
+            session_mgr.save_api_config(
+                provider="zhipu",
+                api_key=api_key,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            # 设置为激活
+            session_mgr.set_active_api_config("zhipu")
+            saved = True
 
     st.info("""
     💡 **提示**：
@@ -152,32 +259,63 @@ def render_zhipu_config():
     - glm-4-flash: 快速响应模型
     """)
 
+    return saved
 
-def render_anthropic_config():
+
+def render_anthropic_config(provider_config: Dict = None):
     """Anthropic配置"""
     st.write("**Anthropic Claude 配置**")
 
+    # 获取当前值
+    default_key = provider_config.get('api_key', '') if provider_config else ''
+    default_model = provider_config.get('model_name', 'claude-sonnet-4-20250514') if provider_config else 'claude-sonnet-4-20250514'
+    default_temp = provider_config.get('temperature', 0.7) if provider_config else 0.7
+    default_tokens = provider_config.get('max_tokens', 4000) if provider_config else 4000
+
+    model_options = ["claude-sonnet-4-20250514", "claude-3-5-sonnet-20241022", "claude-3-haiku-20240307"]
+    default_model_idx = model_options.index(default_model) if default_model in model_options else 0
+
     api_key = st.text_input(
-        "API密钥",
+        "API密钥 *",
         type="password",
+        value=default_key,
         help="Anthropic API Key"
     )
 
     model_name = st.selectbox(
         "模型名称",
-        ["claude-sonnet-4-20250514", "claude-3-5-sonnet-20241022", "claude-3-haiku-20240307"],
-        index=0
+        model_options,
+        index=default_model_idx
     )
 
     temperature = st.slider(
         "Temperature",
-        0.0, 2.0, 0.7, 0.1
+        0.0, 2.0, default_temp, 0.1
     )
 
     max_tokens = st.number_input(
         "最大Token数",
-        1000, 8000, 4000, 100
+        1000, 8000, default_tokens, 100
     )
+
+    # 保存按钮
+    saved = False
+    if st.button("💾 保存 Anthropic 配置", type="primary"):
+        if not api_key:
+            render_error_message("请输入API密钥")
+        else:
+            from db.session_manager import SessionManager
+            session_mgr = SessionManager(db_path="data/data_analysis.db")
+            session_mgr.save_api_config(
+                provider="anthropic",
+                api_key=api_key,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            # 设置为激活
+            session_mgr.set_active_api_config("anthropic")
+            saved = True
 
     st.info("""
     💡 **提示**：
@@ -185,6 +323,8 @@ def render_anthropic_config():
     - Claude Sonnet 4: 最新的Claude模型
     - Claude Haiku: 快速、低成本模型
     """)
+
+    return saved
 
 
 def render_risk_thresholds():
