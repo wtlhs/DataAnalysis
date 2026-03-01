@@ -21,7 +21,14 @@ def render_backend_page(session_manager):
     load_custom_css()
 
     # 页面标题
-    st.title("⚙️ 系统管理")
+    st.markdown("""
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="font-size: 1.875rem; font-weight: 600; margin: 0;">⚙️ 系统管理</h1>
+            <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">配置模型参数、管理数据、调整界面设置</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 创建标签页
     tab1, tab2, tab3, tab4 = st.tabs([

@@ -28,7 +28,7 @@ class Dataset(Base):
     column_names = Column(JSON)  # 列名列表
     size_mb = Column(Float)  # 文件大小(MB)
     is_active = Column(Boolean, default=True, index=True)  # 是否当前选中
-    metadata = Column(JSON, default=dict)  # 其他元数据
+    extra_metadata = Column(JSON, default=dict)  # 其他元数据
 
     def to_dict(self) -> dict:
         """转换为字典"""
@@ -42,7 +42,7 @@ class Dataset(Base):
             'column_names': self.column_names,
             'size_mb': self.size_mb,
             'is_active': self.is_active,
-            'metadata': self.metadata or {}
+            'metadata': self.extra_metadata or {}
         }
 
 

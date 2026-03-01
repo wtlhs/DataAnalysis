@@ -38,11 +38,33 @@ def render_frontend_page(session_manager, task_manager):
     load_custom_css()
 
     # 页面标题
-    st.title("📊 数据分析工作台")
+    st.markdown("""
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="font-size: 1.875rem; font-weight: 600; margin: 0;">📊 数据分析工作台</h1>
+            <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">上传数据文件，获取智能分析报告</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 初始化session state
     _init_session_state()
 
+    # 功能导航 (使用 shadcn 风格 tabs)
+    nav_options = [
+        ("📁 数据上传", "upload"),
+        ("📊 数据预览", "preview"),
+        ("📈 统计分析", "analysis"),
+        ("🔮 趋势预测", "prediction"),
+        ("⚠️ 风险预警", "risk"),
+        ("🤖 AI分析", "ai"),
+        ("📝 报告中心", "reports")
+    ]
+    
+    # 创建导航
+    cols = st.columns([1] * len(nav_options))
+    selected_nav = "upload"
+    
     # 侧边栏导航
     page = st.sidebar.radio("选择功能", [
         "📁 数据上传",
@@ -99,24 +121,58 @@ def _init_session_state():
 
 def render_data_upload_section(session_manager):
     """数据上传页面"""
-    st.header("📁 数据上传")
-
-    # 说明信息
-    render_info_card(
-        "上传您的Excel或CSV文件",
-        """
-        支持功能：
-        - ✅ 统计分析与趋势洞察
-        - ✅ 时间序列预测
-        - ✅ 异常检测与风险预警
-        - ✅ AI智能分析报告
-        """
-    )
-
-    # 多文件上传
-    uploaded_files = render_multi_file_upload("上传Excel/CSV文件")
-
-    if uploaded_files and st.button("🚀 开始上传", type="primary"):
+    # 页面标题
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📁 数据上传</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">上传您的Excel或CSV文件，开始智能数据分析</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 功能介绍卡片
+    st.markdown("""
+    <div class="feature-grid" style="margin-bottom: 1.5rem;">
+        <div class="feature-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
+            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">统计分析</h3>
+            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">描述性统计、分布分析、相关性分析</p>
+        </div>
+        <div class="feature-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔮</div>
+            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">趋势预测</h3>
+            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">时间序列预测、未来走势分析</p>
+        </div>
+        <div class="feature-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
+            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">风险预警</h3>
+            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">异常检测、风险评估、预警通知</p>
+        </div>
+        <div class="feature-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+            <h3 style="font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem 0;">AI智能分析</h3>
+            <p style="font-size: 0.75rem; color: #71717a; margin: 0;">大模型驱动的智能洞察与报告</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 上传区域
+    st.markdown('<div class="upload-zone">', unsafe_allow_html=True)
+    
+    uploaded_files = render_multi_file_upload("拖拽文件到此处或点击选择")
+    
+    if uploaded_files:
+        st.markdown(f"""
+        <div style="margin-top: 1rem;">
+            <span class="status-badge info">已选择 {len(uploaded_files)} 个文件</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # 上传按钮
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        if uploaded_files and st.button("🚀 开始上传", type="primary", use_container_width=True):
         from config.settings import settings
 
         with st.spinner("正在处理文件..."):
@@ -150,7 +206,12 @@ def render_data_upload_section(session_manager):
 
 def render_data_preview_section(session_manager):
     """数据预览页面"""
-    st.header("📊 数据预览")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📊 数据预览</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">查看已上传数据的结构和内容</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 获取当前数据集
     dataset = session_manager.get_active_dataset()
@@ -176,7 +237,12 @@ def render_data_preview_section(session_manager):
 
 def render_analysis_section(session_manager):
     """统计分析页面"""
-    st.header("📈 统计分析")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📈 统计分析</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">对数据进行描述性统计和可视化分析</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 获取当前数据集
     dataset = session_manager.get_active_dataset()
@@ -256,7 +322,12 @@ def render_analysis_section(session_manager):
 
 def render_prediction_section(session_manager, task_manager):
     """预测分析页面"""
-    st.header("🔮 趋势预测")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">🔮 趋势预测</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">基于历史数据进行时间序列预测</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 获取当前数据集
     dataset = session_manager.get_active_dataset()
@@ -357,7 +428,12 @@ def render_prediction_section(session_manager, task_manager):
 
 def render_risk_section(session_manager, task_manager):
     """风险预警页面"""
-    st.header("⚠️ 风险预警")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">⚠️ 风险预警</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">智能识别异常数据，评估风险等级</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 获取当前数据集
     dataset = session_manager.get_active_dataset()
@@ -450,7 +526,12 @@ def render_risk_section(session_manager, task_manager):
 
 def render_ai_section(session_manager, task_manager):
     """AI智能分析页面"""
-    st.header("🤖 AI智能分析")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">🤖 AI智能分析</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">利用大模型进行深度数据分析和智能洞察</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 获取当前数据集
     dataset = session_manager.get_active_dataset()
@@ -572,7 +653,12 @@ def render_ai_section(session_manager, task_manager):
 
 def render_report_center_section(session_manager):
     """报告中心页面"""
-    st.header("📝 报告中心")
+    st.markdown("""
+    <div class="section-header">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📝 报告中心</h2>
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 0.25rem;">管理和下载已生成的智能分析报告</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # 显示报告列表
     reports = session_manager.list_reports()

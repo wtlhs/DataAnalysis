@@ -1,0 +1,571 @@
+/* shadcn/ui 风格自定义 CSS */
+
+/* ============ 基础变量 ============ */
+:root {
+    /* 颜色系统 - Zinc */
+    --background: #ffffff;
+    --foreground: #09090b;
+    --card: #ffffff;
+    --card-foreground: #09090b;
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
+    --primary: #18181b;
+    --primary-foreground: #fafafa;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #18181b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #18181b;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #18181b;
+    
+    /* 圆角 */
+    --radius: 0.5rem;
+    
+    /* 渐变色 */
+    --gradient-primary: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
+    --gradient-accent: linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%);
+}
+
+/* ============ 全局样式 ============ */
+.stApp {
+    background-color: var(--background);
+}
+
+/* 主容器 */
+.main-container {
+    background: var(--background);
+    min-height: 100vh;
+}
+
+/* ============ 标题样式 ============ */
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+/* ============ 卡片样式 (shadcn/card) ============ */
+.shadcn-card {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadcn-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.shadcn-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--card-foreground);
+    line-height: 1.4;
+}
+
+.shadcn-card-description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.shadcn-card-content {
+    padding-top: 0.5rem;
+}
+
+.shadcn-card-footer {
+    display: flex;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+/* ============ 按钮样式 (shadcn/button) ============ */
+.shadcn-button {
+    display: inline-flex;
+    align-items: justify-content;
+    justify-content: center;
+    whitespace-nowrap;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    height: 2.5rem;
+    padding: 0 1rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: none;
+}
+
+/* Primary 按钮 */
+.shadcn-button-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.shadcn-button-primary:hover {
+    background-color: #27272a;
+}
+
+/* Secondary 按钮 */
+.shadcn-button-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.shadcn-button-secondary:hover {
+    background-color: #e4e4e7;
+}
+
+/* Outline 按钮 */
+.shadcn-button-outline {
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+}
+
+.shadcn-button-outline:hover {
+    background-color: var(--accent);
+}
+
+/* Ghost 按钮 */
+.shadcn-button-ghost {
+    background-color: transparent;
+    color: var(--foreground);
+}
+
+.shadcn-button-ghost:hover {
+    background-color: var(--accent);
+}
+
+/* Destructive 按钮 */
+.shadcn-button-destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+.shadcn-button-destructive:hover {
+    background-color: #dc2626;
+}
+
+/* ============ 输入框样式 (shadcn/input) ============ */
+.shadcn-input {
+    display: flex;
+    height: 2.5rem;
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--input);
+    background-color: transparent;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    transition: border-color 0.15s ease;
+}
+
+.shadcn-input:focus {
+    outline: none;
+    ring: 2px solid var(--ring);
+    border-color: var(--ring);
+}
+
+/* ============ Badge 样式 (shadcn/badge) ============ */
+.shadcn-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: colors 0.15s ease;
+}
+
+.shadcn-badge-default {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.shadcn-badge-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.shadcn-badge-outline {
+    border-color: var(--border);
+    color: var(--foreground);
+}
+
+.shadcn-badge-destructive {
+    background-color: #fef2f2;
+    color: var(--destructive);
+}
+
+.shadcn-badge-success {
+    background-color: #f0fdf4;
+    color: #16a34a;
+}
+
+.shadcn-badge-warning {
+    background-color: #fefce8;
+    color: #ca8a04;
+}
+
+/* ============ Tabs 样式 (shadcn/tabs) ============ */
+.shadcn-tabs-list {
+    display: inline-flex;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    background-color: var(--muted);
+    padding: 0.25rem;
+    color: var(--muted-foreground);
+}
+
+.shadcn-tabs-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+}
+
+.shadcn-tabs-trigger[data-state="active"] {
+    background-color: var(--background);
+    color: var(--foreground);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ============ 分隔线 ============ */
+.shadcn-divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 1rem 0;
+}
+
+/* ============ 侧边栏样式 ============ */
+.sidebar {
+    background-color: var(--secondary);
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    height: 100vh;
+    position: fixed;
+    width: 250px;
+    left: 0;
+    top: 0;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--foreground);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar-nav-item:hover {
+    background-color: var(--accent);
+}
+
+.sidebar-nav-item.active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* ============ 数据表格样式 ============ */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    background-color: var(--muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.data-table tr:hover {
+    background-color: var(--accent);
+}
+
+/* ============ 指标卡片样式 ============ */
+.metric-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+}
+
+.metric-card-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.metric-card-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--foreground);
+    line-height: 1.2;
+}
+
+.metric-card-change {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+}
+
+/* ============ 上传区域样式 ============ */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.15s ease;
+    background-color: var(--muted);
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background-color: var(--accent);
+}
+
+.upload-area.drag-over {
+    border-color: var(--primary);
+    background-color: var(--accent);
+}
+
+/* ============ 动画效果 ============ */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slide-in {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+}
+
+/* ============ 响应式网格 ============ */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+.grid {
+    display: grid;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+/* ============ Streamlit 覆盖样式 ============ */
+/* 覆盖默认的 Streamlit 样式 */
+[data-testid="stAppViewContainer"] {
+    background: var(--background);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* 侧边栏 */
+section[data-testid="stSidebar"] {
+    background: var(--secondary);
+    border-right: 1px solid var(--border);
+}
+
+/* 按钮美化 */
+div.stButton > button {
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+/* 输入框 */
+div.stTextInput > div > div > input {
+    border-radius: var(--radius);
+    border-color: var(--input);
+}
+
+/* 选择框 */
+div.stSelectbox > div > div > div {
+    border-radius: var(--radius);
+}
+
+/* 进度条 */
+.stProgress > div > div {
+    background: var(--primary);
+    border-radius: 9999px;
+}
+
+/* 指标卡片 */
+[data-testid="stMetric"] {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+/* 折叠面板 */
+[data-testid="stExpander"] {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+}
+
+/* Tabs */
+div[data-baseweb="tab-list"] {
+    background: var(--muted);
+    border-radius: var(--radius);
+    padding: 0.25rem;
+}
+
+div[data-baseweb="tab"] {
+    border-radius: 0.375rem;
+}
+
+/* 消息样式 */
+div.stSuccess {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    border-radius: var(--radius);
+}
+
+div.stError {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    border-radius: var(--radius);
+}
+
+div.stWarning {
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    color: #854d0e;
+    border-radius: var(--radius);
+}
+
+div.stInfo {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    border-radius: var(--radius);
+}
+
+/* 数据编辑器 */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* 分割线 */
+hr {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1aa;
+}

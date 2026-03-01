@@ -11,112 +11,180 @@ from pathlib import Path
 
 
 def load_custom_css():
-    """加载自定义CSS样式"""
+    """加载自定义CSS样式 (shadcn/ui 风格)"""
+    # 加载 shadcn 风格 CSS
+    css_path = Path(__file__).parent / "shadcn.css"
+    if css_path.exists():
+        with open(css_path, 'r', encoding='utf-8') as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    
+    # 额外的自定义样式
     st.markdown("""
     <style>
     /* 全局样式 */
-    .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .main-header {
+        font-size: 1.875rem;
+        font-weight: 600;
+        color: #09090b;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e4e4e7;
     }
-
-    [data-testid="stAppViewContainer"] {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 20px;
-        padding: 20px;
+    
+    .feature-card {
+        background: #ffffff;
+        border: 1px solid #e4e4e7;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        transition: all 0.15s ease;
     }
-
-    /* 侧边栏样式 */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    
+    .feature-card:hover {
+        border-color: #18181b;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-
-    [data-testid="stSidebar"] [role="img"] {
-        filter: brightness(0) invert(1);
+    
+    /* 按钮组 */
+    .button-group {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-
-    /* 卡片样式 */
-    .custom-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        color: white;
+    
+    /* 统计数字 */
+    .stat-number {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #18181b;
+        line-height: 1;
     }
-
-    /* 按钮样式 */
-    .stButton>button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: #71717a;
+        margin-top: 0.25rem;
+    }
+    
+    /* 状态标签 */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.success {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+    
+    .status-badge.warning {
+        background: #fefce8;
+        color: #ca8a04;
+    }
+    
+    .status-badge.danger {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    
+    .status-badge.info {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+    
+    /* 功能卡片网格 */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    
+    /* 上传区域 */
+    .upload-zone {
+        border: 2px dashed #e4e4e7;
+        border-radius: 0.5rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        background: #fafafa;
+        transition: all 0.2s ease;
+    }
+    
+    .upload-zone:hover {
+        border-color: #18181b;
+        background: #f4f4f5;
+    }
+    
+    /* 页面导航 */
+    .nav-tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: #f4f4f5;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+    }
+    
+    .nav-tab {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #71717a;
+        cursor: pointer;
+        transition: all 0.15s ease;
         border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        color: white;
-        font-weight: bold;
-        transition: all 0.3s ease;
+        background: transparent;
     }
-
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    
+    .nav-tab:hover {
+        color: #18181b;
     }
-
-    /* 指标卡片 */
-    [data-testid="stMetricDelta"] {
-        color: #48bb78 !important;
+    
+    .nav-tab.active {
+        background: #ffffff;
+        color: #18181b;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
-
+    
+    /* 空状态 */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #71717a;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* 数据表格容器 */
+    .data-table-container {
+        border: 1px solid #e4e4e7;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    /* 风险等级颜色 */
+    .risk-high { color: #dc2626; }
+    .risk-medium { color: #ca8a04; }
+    .risk-low { color: #16a34a; }
+    
     /* 进度条 */
-    .stProgress .progress-bar {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    .progress-bar {
+        height: 0.5rem;
+        background: #f4f4f5;
+        border-radius: 9999px;
+        overflow: hidden;
     }
-
-    /* 成功/错误消息样式 */
-    .success-message {
-        background-color: #c6f6d5;
-        color: #22543d;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        border-left: 4px solid #48bb78;
-    }
-
-    .error-message {
-        background-color: #fed7d7;
-        color: #822727;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        border-left: 4px solid #e53e3e;
-    }
-
-    .warning-message {
-        background-color: #feebc8;
-        color: #744210;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        border-left: 4px solid #dd6b20;
-    }
-
-    /* expander样式 */
-    [data-testid="stExpander"] {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        margin: 10px 0;
-    }
-
-    /* tabs样式 */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        background-color: #f7fafc;
-        border-radius: 8px 8px 0 0;
-        padding: 0 20px;
+    
+    .progress-bar-fill {
+        height: 100%;
+        background: #18181b;
+        border-radius: 9999px;
+        transition: width 0.3s ease;
     }
     </style>
     """, unsafe_allow_html=True)

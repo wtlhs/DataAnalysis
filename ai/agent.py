@@ -3,7 +3,7 @@ AI智能体核心类
 
 协调大模型调用，实现智能数据分析功能
 """
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Callable
 import pandas as pd
 
 from .models.base import BaseModel
